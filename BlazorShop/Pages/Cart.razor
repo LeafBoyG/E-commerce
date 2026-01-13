@@ -1,0 +1,76 @@
+@page "/cart"
+@using BlazorShop.Services
+@using BlazorShop.Models
+@inject CartService CartService
+
+<div class="cart-container">
+    <h2>Your Shopping Cart</h2>
+
+    @if (CartService.CartItems.Count == 0)
+    {
+        <div class="empty-cart">
+            <p>Your cart is currently empty.</p>
+            <a href="/" class="btn-continue">Go Shopping</a>
+        </div>
+    }
+    else
+    {
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in CartService.CartItems)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.ImageUrl" alt="@item.Name" class="cart-img" />
+                        </td>
+                        <td>
+                            <strong>@item.Name</strong><br/>
+                            <span style="font-size:0.8rem; color:#888;">@item.Category</span>
+                        </td>
+                        <td class="price-text">$@item.Price</td>
+                        <td>
+                            <button class="btn-remove" @onclick="() => RemoveItem(item)">
+                                ✕ Remove
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="cart-summary">
+            <div class="total-row">
+                <span>Total Amount:</span>
+                <span class="total-price">$@CartService.CartItems.Sum(item => item.Price)</span>
+            </div>
+     <a href="/checkout" class="btn-checkout" style="text-align:center; text-decoration:none;">
+    Proceed to Checkout
+</a>
+        </div>
+    }
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        CartService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        CartService.OnChange -= StateHasChanged;
+    }
+
+    private void RemoveItem(Product product)
+    {
+        CartService.RemoveFromCart(product);
+    }
+}

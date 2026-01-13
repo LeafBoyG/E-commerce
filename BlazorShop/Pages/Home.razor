@@ -1,0 +1,26 @@
+﻿@page "/"
+@using BlazorShop.Models
+@using BlazorShop.Services
+@inject ProductService ProductService 
+
+<div class="header-section" style="text-align: center; padding: 40px;">
+    <h1>Biggest Offer Revealed</h1>
+    <p>More deals inside up to 50% OFF</p>
+</div>
+
+<div class="products-container">
+    @foreach (var product in products)
+    {
+        <ProductCard Product="product" />
+    }
+</div>
+
+@code {
+    private List<Product> products = new List<Product>();
+
+    protected override void OnInitialized()
+    {
+        // Load data from our "Mock Database" service
+        products = ProductService.GetProducts();
+    }
+}

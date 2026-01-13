@@ -1,0 +1,75 @@
+@page "/checkout"
+@using BlazorShop.Models
+@using BlazorShop.Services
+@inject CartService CartService
+@inject NavigationManager Navigation
+
+<div class="cart-container">
+    <h2>Checkout</h2>
+
+    @if (CartService.CartItems.Count == 0)
+    {
+        <p>Your cart is empty.</p>
+        <a href="/" class="btn-continue">Go Shopping</a>
+    }
+    else
+    {
+        <div class="checkout-layout">
+            <div class="checkout-form">
+                <h3>Shipping Information</h3>
+                
+                <EditForm Model="orderDetails" OnValidSubmit="PlaceOrder">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <InputText @bind-Value="orderDetails.Name" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <InputText @bind-Value="orderDetails.Email" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Address</label>
+                        <InputTextArea @bind-Value="orderDetails.Address" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn-checkout">Confirm & Place Order</button>
+                </EditForm>
+            </div>
+
+            <div class="order-summary-card">
+                <h3>Order Summary</h3>
+                @foreach(var item in CartService.CartItems)
+                {
+                    <div class="summary-item">
+                        <span>@item.Name</span>
+                        <span>$@item.Price</span>
+                    </div>
+                }
+                <hr />
+                <div class="total-row">
+                    Total: <span class="price-text">$@CartService.CartItems.Sum(x => x.Price)</span>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private OrderDetails orderDetails = new OrderDetails();
+
+    private void PlaceOrder()
+    {
+        // 1. In a real app, you would send 'orderDetails' and 'CartItems' to your API here.
+        
+        // 2. Clear the cart
+        CartService.CartItems.Clear();
+        
+        // 3. Navigate to success page
+        Navigation.NavigateTo("/order-success");
+    }
+}

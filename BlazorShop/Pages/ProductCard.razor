@@ -1,0 +1,28 @@
+@using BlazorShop.Models
+@using BlazorShop.Services
+@inject CartService CartService
+
+<div class="product-card">
+    <img src="@Product.ImageUrl" alt="@Product.Name" />
+    
+    <div class="card-body">
+        <h3>@Product.Name</h3>
+        <p class="category">@Product.Category</p> 
+        <p class="price">$@Product.Price</p>
+        
+        <button class="btn-add" @onclick="AddToCart">
+            ADD TO CART
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Product Product { get; set; }
+
+    private void AddToCart()
+    {
+        // This sends the product to your CartService
+        CartService.AddToCart(Product);
+    }
+}

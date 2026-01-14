@@ -1,28 +1,39 @@
 @using BlazorShop.Models
 @using BlazorShop.Services
 @inject CartService CartService
-
+@inject ToastService ToastService  
 <div class="product-card">
     <img src="@Product.ImageUrl" alt="@Product.Name" />
     
     <div class="card-body">
         <h3>@Product.Name</h3>
-        <p class="category">@Product.Category</p> 
+        <p class="category-label">@Product.Category</p> 
         <p class="price">$@Product.Price</p>
         
+        <AuthorizeView>
+    <Authorized>
         <button class="btn-add" @onclick="AddToCart">
             ADD TO CART
         </button>
+    </Authorized>
+    <NotAuthorized>
+        <button class="btn-add disabled" disabled>
+            Login to Buy
+        </button>
+    </NotAuthorized>
+</AuthorizeView>
     </div>
 </div>
 
 @code {
     [Parameter]
-    public Product Product { get; set; }
+    public Product Product { get; set; } = default!;
 
     private void AddToCart()
     {
-        // This sends the product to your CartService
         CartService.AddToCart(Product);
+        
+        // 2. Trigger the notification
+        ToastService.ShowToast($"Added {Product.Name} to cart!");
     }
 }

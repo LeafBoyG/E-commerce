@@ -1,0 +1,32 @@
+@using BlazorShop.Services
+@inject ToastService ToastService
+@implements IDisposable
+
+<div class="toast-container @(ToastService.IsVisible ? "show" : "") @ToastService.Type">
+    <div class="toast-icon">
+        @if(ToastService.Type == "success") { <span>✓</span> }
+        else { <span>!</span> }
+    </div>
+    <div class="toast-message">@ToastService.Message</div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Console.WriteLine("Toast Component Initialized!"); // Check your browser console for this
+        ToastService.OnShow += RefreshUI;
+        ToastService.OnHide += RefreshUI;
+    }
+
+    private void RefreshUI()
+    {
+        // This forces the UI to re-render when the timer updates
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose() // Clean up to prevent memory leaks
+    {
+        ToastService.OnShow -= RefreshUI;
+        ToastService.OnHide -= RefreshUI;
+    }
+}

@@ -1,13 +1,18 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using BlazorShop;
-using BlazorShop.Services; // This is the key line
+using BlazorShop.Services; 
+using Microsoft.AspNetCore.Components.Authorization;
+
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<ToastService>();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 
 // We register the service cleanly here
 builder.Services.AddScoped<CartService>(); 

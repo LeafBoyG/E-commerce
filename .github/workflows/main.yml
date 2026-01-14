@@ -1,6 +1,5 @@
 name: Deploy to GitHub Pages
 
-# Run this script whenever we push to the master or main branch
 on:
   push:
     branches: [ master, main ]
@@ -12,28 +11,26 @@ jobs:
   deploy-to-github-pages:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checkout the code
       - uses: actions/checkout@v3
 
-      # 2. Setup .NET
+      # Setup .NET 8 or newer
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x' # Change to '9.0.x' or '10.0.x' if you are using newer previews
+          dotnet-version: '8.0.x'
 
-      # 3. Publish the app
-      - name: Publish .NET Core Project
-        run: dotnet publish BlazorShop.csproj -c Release -o release --nologo
+      # IMPORTANT CHANGE HERE:
+      # We point to 'BlazorShop/BlazorShop.csproj' because your project is in a subfolder.
+      - name: Publish .NET Project
+        run: dotnet publish BlazorShop/BlazorShop.csproj -c Release -o release --nologo
 
-      # 4. Fix for GitHub Pages (The "Gotchas")
-      # Copy index.html to 404.html so refreshing works
-      # Add .nojekyll so files starting with "_" (like _framework) are not ignored
+      # Copy index.html to 404.html to fix routing
       - name: Fix GitHub Pages Routing
         run: |
           cp release/wwwroot/index.html release/wwwroot/404.html
           touch release/wwwroot/.nojekyll
 
-      # 5. Deploy to the 'gh-pages' branch
+      # Deploy the 'release/wwwroot' folder
       - name: Commit wwwroot to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
